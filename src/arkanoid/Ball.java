@@ -40,7 +40,7 @@ public class Ball extends Object {
 		this.largo = largo;
 	}
 	
-	// Acciones de la pelota
+	// Acciones de cada monstruo
 
 	public int getVelocidadX() {
 		return velocidadX;
