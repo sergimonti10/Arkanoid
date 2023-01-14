@@ -1,7 +1,10 @@
 package arkanoid;
 
+
 import java.awt.Color;
 import java.awt.Graphics;
+
+
 
 public class Ball extends Object {
 	public static final String IMAGEN_PLAYER = null;
@@ -9,10 +12,11 @@ public class Ball extends Object {
 	// Propiedades privadas de cada monstruo
 	private String nombre; // Nombre que recibe el monstruo
 	private int velocidadX = -5;
-	private int velocidadY = - 5;
+	private int velocidadY = -5;
+	private int alto = 7;
+	private int largo = 7;
 	
 	//Propiedades estáticas de esta clase
-	public static String IMAGEN_BICHO_0 = "bicho0.gif";
 	
 	/**
 	 * Constructor sin argumentos de entrada
@@ -29,12 +33,46 @@ public class Ball extends Object {
 	 * @param nombre
 	 * @param probabilidadDisparo
 	 */
-	public Ball(int x, int y, String img, String nombre) {
+	public Ball(int x, int y, String img, String nombre, int alto, int largo) {
 		super(x, y, img);
 		this.nombre = nombre;
+		this.alto = alto;
+		this.largo = largo;
 	}
 	
-	// Acciones de cada monstruo
+	// Acciones de la pelota
+
+	public int getVelocidadX() {
+		return velocidadX;
+	}
+
+	public void setVelocidadX(int velocidadX) {
+		this.velocidadX = velocidadX;
+	}
+
+	public int getVelocidadY() {
+		return velocidadY;
+	}
+
+	public void setVelocidadY(int velocidadY) {
+		this.velocidadY = velocidadY;
+	}
+
+	public int getAlto() {
+		return alto;
+	}
+
+	public void setAlto(int alto) {
+		this.alto = alto;
+	}
+
+	public int getLargo() {
+		return largo;
+	}
+
+	public void setLargo(int largo) {
+		this.largo = largo;
+	}
 
 	/**
 	 * Metodo que devuelve un String con todos los valores de este objeto.
@@ -66,8 +104,8 @@ public class Ball extends Object {
 	 */
 	@Override
 	public void paint(Graphics g) {
-		g.setColor(Color.orange);
-		g.fillRect(this.x, this.y, 7, 7);
+		g.setColor(Color.ORANGE);
+		g.fillOval(this.x, this.y, 7, 7);
 	}
 
 	@Override
@@ -75,17 +113,35 @@ public class Ball extends Object {
 		// El monstruo se mueve de manera horizontal, en cada FPS
 		this.x += this.velocidadX;
 		// Si el monstruo abandona la escena por la izquierda o la derecha, rebota
-		if (this.x < 0 || this.x > 480) {
+		if (this.x < 0 || this.x > Arkanoid.getInstance().getCanvas().getWidth()) {
 			this.velocidadX = -this.velocidadX;
 		}
 		
 		// Copiamos el esquema anterior para el movimiento vertical
 		this.y += this.velocidadY;
 		// Si el monstruo abandona la escena por la izquierda o la derecha, rebota
-		if (this.y < 0 || this.y > 605) {
+		if (this.y < 0 || this.y > Arkanoid.getInstance().getCanvas().getHeight()) {
 			this.velocidadY = -this.velocidadY;
 		}
 		
+	}
+
+	@Override
+	protected Object getCanvas() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected int getWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected int getHeight() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

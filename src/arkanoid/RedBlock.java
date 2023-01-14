@@ -8,7 +8,6 @@ public class RedBlock extends Object {
 	private String nombre; // Nombre que recibe el monstruo
 	
 	//Propiedades estáticas de esta clase
-	public static String IMAGEN_BICHO_0 = "bicho0.gif";
 	
 	/**
 	 * Constructor sin argumentos de entrada
@@ -62,7 +61,7 @@ public class RedBlock extends Object {
 	 */
 	@Override
 	public void paint(Graphics g) {
-		g.setColor(Color.red);
+		g.setColor(Color.RED);
 		g.fillRect(this.x, this.y, this.ancho, this.alto);
 	}
 
@@ -70,6 +69,24 @@ public class RedBlock extends Object {
 	public void actua() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected Object getCanvas() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected int getWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected int getHeight() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

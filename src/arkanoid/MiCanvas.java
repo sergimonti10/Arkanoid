@@ -23,7 +23,7 @@ public class MiCanvas extends Canvas {
 	@Override
 	public void paint(Graphics g) {
 		// Pinto el fondo
-		this.setBackground(Color.black);
+		this.setBackground(Color.BLACK);
 		
 		// Pinto cada uno de los actores
 		for (Object a : this.objects) {

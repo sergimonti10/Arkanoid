@@ -97,5 +97,12 @@ public abstract class Object {
 		this.alto = alto;
 	}
 
+	protected abstract Object getCanvas();
+
+	protected abstract int getWidth();
+
+	protected abstract int getHeight();
+
+
 	
 }

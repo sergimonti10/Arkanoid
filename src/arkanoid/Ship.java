@@ -1,79 +1,143 @@
 package arkanoid;
 
+
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+
 
 public class Ship extends Object {
-	public static final String IMAGEN_PLAYER = null;
+	// Propiedades estáticas de esta clase
+	public static String IMAGEN_PLAYER = "nave.gif";
+	// Propiedades que indican si se está produciendo un movimiento en una dirección
+	private boolean down = false, up = false, left = false, right = false;
+	private int speedX;
+	private int speedY;
+	// Velocidad de la nave, expresada en píxeles por cada frame
+	public static int SPEED = 5;
 
-	// Propiedades privadas de cada monstruo
-	private String nombre; // Nombre que recibe el monstruo
-	
-	//Propiedades estáticas de esta clase
-	public static String IMAGEN_BICHO_0 = "bicho0.gif";
-	public static String IMAGEN_BICHO_1 = "bicho1.gif";
-	public static String IMAGEN_BICHO_2 = "bicho2.gif";
-	
 	/**
-	 * Constructor sin argumentos de entrada
+	 * Constructor por defecto "default constructor"
 	 */
 	public Ship() {
 		super();
 	}
 
 	/**
-	 * Constructor más completo, con todas las propiedades del objeto
+	 * Constructor que inicializa las propiedades del objeto
+	 * 
 	 * @param x
 	 * @param y
 	 * @param img
-	 * @param nombre
-	 * @param probabilidadDisparo
 	 */
-	public Ship(int x, int y, String img, String nombre) {
+	public Ship(int x, int y, String img) {
 		super(x, y, img);
-		this.nombre = nombre;
+		this.speedX = 1;
+		this.speedY = 1;
 	}
-	
-	// Acciones de cada monstruo
 
 	/**
-	 * Metodo que devuelve un String con todos los valores de este objeto.
+	 * Obtención de un String con todos los datos de un objeto Player
 	 */
 	public String toString() {
-		return "Monster [nombre=" + nombre + ", getX()=" + getX()
-				+ ", getY()=" + getY() + ", getImg()=" + getImg() + "]";
-	}
-
-	
-	// Getters y Setters 
-	
-	/**
-	 * @return the nombre
-	 */
-	public String getNombre() {
-		return nombre;
+		return "Ship [getX()=" + getX() + ", getY()=" + getY() + ", getImg()=" + getImg() + "]";
 	}
 
 	/**
-	 * @param nombre the nombre to set
-	 */
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
-
-	/**
-	 * Utilizado para pintar un monstruo, según sus coordenadas de x e y
+	 * Utilizado para pintar un player, según sus coordenadas de x e y
 	 */
 	@Override
 	public void paint(Graphics g) {
-		g.setColor(Color.red);
-		g.fillRect(this.x, this.y, 60, 10);
+		g.setColor(Color.RED);
+		g.drawRect(this.x, this.y, this.ancho, this.alto);
 	}
 
 	@Override
 	public void actua() {
-		// TODO Auto-generated method stub
+		// Compruebo las variables booleanas que determinan el movimiento
+		if (up) this.y -= SPEED;
+		if (down) this.y += SPEED;
+		if (left) this.x -= SPEED;
+		if (right) this.x += SPEED;
 		
+		// Compruebo si el player sale del canvas por cualquiera de los cuatro márgenes
+		move(this.x);
 	}
 
+	/**
+	 * Mediante la llamada a este método, podemos cambiar la posición del jugador a
+	 * unas nuevas coordenadas
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void move(int x) {
+		this.x = x;
+		// Controlo los casos en los que el jugador pueda salir del Canvas
+		MiCanvas canvas = Arkanoid.getInstance().getCanvas(); // Referencia al objeto Canvas usado
+		
+		// Compruebo si el jugador sale por la derecha
+		if (this.x > (canvas.getWidth() - this.ancho)) {
+			this.x = canvas.getWidth() - this.ancho;
+		}
+
+		// Compruebo si el jugador sale por la izquierda
+		if (this.x < 0) {
+			this.x = 0;
+		}
+		
+		// Compruebo si el jugador sale por abajo
+		if (this.y > (canvas.getHeight() - this.alto)) {
+			this.y = canvas.getHeight() - this.alto;
+		}
+		
+		// Compruebo si el jugador sale por arriba
+		if (this.y < 0) {
+			this.y = 0;
+		}
+	}
+
+	/**
+	 * Se ejecuta al recibir un evento del teclado: tecla presionada
+	 * @param e
+	 */
+	public void keyPressed (KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			left = true; break;
+		case KeyEvent.VK_RIGHT:
+			right = true; break;
+		}
+	}
+	
+	/**
+	 * Se ejecuta al recibir un evento del teclado: tecla liberada
+	 * @param e
+	 */
+	public void keyReleased (KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			left = false; break;
+		case KeyEvent.VK_RIGHT:
+			right = false; break;
+		}
+	}
+
+	@Override
+	protected Object getCanvas() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected int getWidth() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	protected int getHeight() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
