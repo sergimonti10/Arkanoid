@@ -1,5 +1,6 @@
 package arkanoid;
 
+import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.awt.Graphics;
 
@@ -24,8 +25,8 @@ public class BlueBlock extends Object {
 	 * @param nombre
 	 * @param probabilidadDisparo
 	 */
-	public BlueBlock(int x, int y, String img, String nombre) {
-		super(x, y, img);
+	public BlueBlock(int x, int y, String nombre, int ancho, int alto) {
+		super(x, y, ancho, alto, ImagesCache.getInstance().getImagen(ImagesCache.BLUE_BLOCK_IMAGE));
 		this.nombre = nombre;
 	}
 	
@@ -59,16 +60,19 @@ public class BlueBlock extends Object {
 	/**
 	 * Utilizado para pintar un monstruo, según sus coordenadas de x e y
 	 */
-	@Override
-	public void paint(Graphics g) {
-		g.setColor(Color.BLUE);
-		g.fillRect(this.x, this.y, this.ancho, this.alto);
-	}
 
 	@Override
 	public void actua() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void collidesWith(Object a) {
+		super.collidesWith(a);
+		// Si colisionamos con un player o un disparo, eliminamos al monstruo
+		if (a instanceof Ball) {
+			Arkanoid.getInstance().objectDelete(this);
+		}
 	}
 
 	@Override

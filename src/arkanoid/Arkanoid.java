@@ -1,6 +1,7 @@
 package arkanoid;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -21,7 +22,9 @@ public class Arkanoid {
 	private List<Object> objects = new ArrayList<Object>();
 	private MiCanvas canvas = null;
 	private static Ship ship = null;
+	private static Ball ball = null;
 	public static Arkanoid instance = null;
+	private List<Object> objectsDelete = new ArrayList<Object>();
 	
 	public static Arkanoid getInstance() {
 		if (instance == null) { // Si no está inicializada, se inicializa
@@ -31,7 +34,7 @@ public class Arkanoid {
 	}
 	
 	public Arkanoid () {
-		JFrame window = new JFrame("Arkanoid");
+		window = new JFrame("Arkanoid");
 		window.setBounds(400, 0, 500, 650);
 		
 		// Para colocar objetos sobre la ventana debo asignarle un "layout" (plantilla) al panel principal de la ventana
@@ -48,6 +51,7 @@ public class Arkanoid {
 			public void mouseMoved(MouseEvent e) {
 				super.mouseMoved(e);
 				ship.move(e.getX());
+				ball.move(e.getX());
 			}			
 		});
 		
@@ -57,12 +61,15 @@ public class Arkanoid {
 			public void keyPressed(KeyEvent e) {
 				super.keyPressed(e);
 				ship.keyPressed(e);
+				ball.keyPressed(e);
+				
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
 				super.keyReleased(e);
 				ship.keyReleased(e);
+				ball.keyReleased(e);
 			}
 		});
 
@@ -72,9 +79,6 @@ public class Arkanoid {
 		// Hago que la ventana sea visible
     window.setVisible(true);
 		
-		// Tras mostrar la ventana, consigo que el foco de la ventana vaya al
-		// Canvas, para que pueda escuchar los eventos del teclado
-		canvas.requestFocus();
 		
 		// Control del evento de cierre de ventana
 		window.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -98,18 +102,23 @@ public class Arkanoid {
 	public void game () {
 		int millisPorCadaFrame = 1000 / FPS;
 		do {
+			if (window.getFocusOwner() != null && !window.getFocusOwner().equals(canvas)) {
+				canvas.requestFocus();
+			}
 			// Redibujo la escena tantas veces por segundo como indique la variable FPS
 			// Tomo los millis actuales
 			long millisAntesDeProcesarEscena = new Date().getTime();
 			
 			// Redibujo la escena
-			canvas.repaint();
+			canvas.drawScene();
 			
 			// Recorro todos los actores, consiguiendo que cada uno de ellos actúe
 			for (Object a : objects) {
 				a.actua();
 			}
 			
+			collidesDetected();    
+			updateActors();
 			// Calculo los millis que debemos parar el proceso, generando 60 FPS.
 			long millisDespuesDeProcesarEscena = new Date().getTime();
 			int millisDeProcesamientoDeEscena = (int) (millisDespuesDeProcesarEscena - millisAntesDeProcesarEscena);
@@ -131,12 +140,16 @@ public class Arkanoid {
 	private static List<Object> createObjects () {
 		List<Object> objects = new ArrayList<Object>();
 		
-		Ball ball = new Ball(237, 510, null, null, 7, 7);
-		objects.add(ball);
 		
 		//Construyo un player para este juego y lo agrego a la lista
-		ship = new Ship(212, 525, null);
+		ship = new Ship(212, 525, 55, 8);
 		objects.add(ship);
+		
+		int xShip = ship.getX() + (ship.getAncho()/2) - 3;
+		int yShip = ship.getY() - 8;
+		
+		ball = new Ball(xShip, yShip, null, 7, 7);
+		objects.add(ball);
 		
 		int x = -13;
 		
@@ -144,7 +157,7 @@ public class Arkanoid {
 		for (int i = 0; i < 10; i++) {
 			x  += 43;
 			int y = 140;
-			YellowBlock yb = new YellowBlock(x, y, null, "YB");
+			YellowBlock yb = new YellowBlock(x, y, "YB", 40, 15);
 			objects.add(yb);
 		}
 		
@@ -152,7 +165,7 @@ public class Arkanoid {
 		for (int i = 0; i < 10; i++) {
 			x  += 43;
 			int y = 122;
-			RedBlock rb = new RedBlock(x, y, null, "RB");
+			RedBlock rb = new RedBlock(x, y, "RB", 40, 15);
 			objects.add(rb);
 		}
 		
@@ -160,7 +173,7 @@ public class Arkanoid {
 		for (int i = 0; i < 10; i++) {
 			x  += 43;
 			int y = 104;
-			GreenBlock gb = new GreenBlock(x, y, null, "GB");
+			GreenBlock gb = new GreenBlock(x, y, "GB", 40, 15);
 			objects.add(gb);
 		}
 		
@@ -168,7 +181,7 @@ public class Arkanoid {
 		for (int i = 0; i < 10; i++) {
 			x  += 43;
 			int y = 86;
-			BlueBlock bb = new BlueBlock(x, y, null, "BB");
+			BlueBlock bb = new BlueBlock(x, y, "BB", 40, 15);
 			objects.add(bb);
 		}
 		
@@ -176,7 +189,7 @@ public class Arkanoid {
 		for (int i = 0; i < 10; i++) {
 			x  += 43;
 			int y = 68;
-			MagentaBlock mb = new MagentaBlock(x, y, null, "MB");
+			MagentaBlock mb = new MagentaBlock(x, y, "MB", 40, 15);
 			objects.add(mb);
 		}
 		
@@ -198,6 +211,52 @@ public class Arkanoid {
 		if (election == JOptionPane.YES_OPTION) {
 			System.exit(0);
 		}
+	}
+	
+	public void objectDelete (Object a) {
+		this.objectsDelete.add(a);
+	}
+
+	public void ballCollisions(Object a) {
+		
+	}
+	/**
+	 * Incorpora los actores nuevos al juego y elimina los que corresponden
+	 */
+	private void updateActors () {
+
+		// Elimino los actores que se deben eliminar
+		for (Object a : this.objectsDelete) {
+			this.objects.remove(a);
+		}
+		this.objectsDelete.clear(); // Limpio la lista de actores a eliminar, ya los he eliminado
+		
+	}
+	
+	private void collidesDetected() {
+		// Una vez que cada actor ha actuado, intento detectar colisiones entre los actores y notificarlas. Para detectar
+		// estas colisiones, no nos queda más remedio que intentar detectar la colisión de cualquier actor con cualquier otro
+		// sólo con la excepción de no comparar un actor consigo mismo.
+		// La detección de colisiones se va a baser en formar un rectángulo con las medidas que ocupa cada actor en pantalla,
+		// De esa manera, las colisiones se traducirán en intersecciones entre rectángulos.
+		Object actor1 = ball;
+			// Creo un rectángulo para este actor.
+			Rectangle rect1 = new Rectangle(actor1.getX(), actor1.getY(), actor1.getAncho(), actor1.getAlto());
+			// Compruebo un actor con cualquier otro actor
+			for (Object actor2 : this.objects) {
+				// Evito comparar un actor consigo mismo, ya que eso siempre provocaría una colisión y no tiene sentido
+				if (!actor1.equals(actor2)) {
+					// Formo el rectángulo del actor 2
+					Rectangle rect2 = new Rectangle(actor2.getX(), actor2.getY(), actor2.getAncho(), actor2.getAlto());
+					// Si los dos rectángulos tienen alguna intersección, notifico una colisión en los dos actores
+					if (rect1.intersects(rect2)) {
+						actor1.collidesWith(actor2); // El actor 1 colisiona con el actor 2
+						actor2.collidesWith(actor1); // El actor 2 colisiona con el actor 1
+						break;
+					}
+				}
+			}
+		
 	}
 	
 }

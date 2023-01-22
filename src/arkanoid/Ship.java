@@ -1,6 +1,6 @@
 package arkanoid;
 
-
+import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
@@ -8,11 +8,8 @@ import java.awt.event.KeyEvent;
 
 public class Ship extends Object {
 	// Propiedades estáticas de esta clase
-	public static String IMAGEN_PLAYER = "nave.gif";
 	// Propiedades que indican si se está produciendo un movimiento en una dirección
-	private boolean down = false, up = false, left = false, right = false;
-	private int speedX;
-	private int speedY;
+	private boolean left = false, right = false;
 	// Velocidad de la nave, expresada en píxeles por cada frame
 	public static int SPEED = 5;
 
@@ -30,10 +27,8 @@ public class Ship extends Object {
 	 * @param y
 	 * @param img
 	 */
-	public Ship(int x, int y, String img) {
-		super(x, y, img);
-		this.speedX = 1;
-		this.speedY = 1;
+	public Ship(int x, int y, int ancho, int alto) {
+		super(x, y, ancho, alto, ImagesCache.getInstance().getImagen(ImagesCache.SHIP_IMAGE));
 	}
 
 	/**
@@ -46,17 +41,10 @@ public class Ship extends Object {
 	/**
 	 * Utilizado para pintar un player, según sus coordenadas de x e y
 	 */
-	@Override
-	public void paint(Graphics g) {
-		g.setColor(Color.RED);
-		g.drawRect(this.x, this.y, this.ancho, this.alto);
-	}
 
 	@Override
 	public void actua() {
 		// Compruebo las variables booleanas que determinan el movimiento
-		if (up) this.y -= SPEED;
-		if (down) this.y += SPEED;
 		if (left) this.x -= SPEED;
 		if (right) this.x += SPEED;
 		
@@ -86,15 +74,6 @@ public class Ship extends Object {
 			this.x = 0;
 		}
 		
-		// Compruebo si el jugador sale por abajo
-		if (this.y > (canvas.getHeight() - this.alto)) {
-			this.y = canvas.getHeight() - this.alto;
-		}
-		
-		// Compruebo si el jugador sale por arriba
-		if (this.y < 0) {
-			this.y = 0;
-		}
 	}
 
 	/**

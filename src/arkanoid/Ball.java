@@ -1,20 +1,22 @@
 package arkanoid;
 
 
+import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JOptionPane;
 
 
 
 public class Ball extends Object {
-	public static final String IMAGEN_PLAYER = null;
-
 	// Propiedades privadas de cada monstruo
 	private String nombre; // Nombre que recibe el monstruo
 	private int velocidadX = -5;
 	private int velocidadY = -5;
-	private int alto = 7;
-	private int largo = 7;
+	private boolean left = false, right = false, start = false;
+	public static int SPEED = 5;
 	
 	//Propiedades estáticas de esta clase
 	
@@ -33,11 +35,9 @@ public class Ball extends Object {
 	 * @param nombre
 	 * @param probabilidadDisparo
 	 */
-	public Ball(int x, int y, String img, String nombre, int alto, int largo) {
-		super(x, y, img);
+	public Ball(int x, int y, String nombre, int ancho, int alto) {
+		super(x, y, ancho, alto, ImagesCache.getInstance().getImagen(ImagesCache.BALL_IMAGE));
 		this.nombre = nombre;
-		this.alto = alto;
-		this.largo = largo;
 	}
 	
 	// Acciones de cada monstruo
@@ -66,12 +66,12 @@ public class Ball extends Object {
 		this.alto = alto;
 	}
 
-	public int getLargo() {
-		return largo;
+	public int getAncho() {
+		return ancho;
 	}
 
-	public void setLargo(int largo) {
-		this.largo = largo;
+	public void setAncho(int largo) {
+		this.ancho = largo;
 	}
 
 	/**
@@ -102,14 +102,10 @@ public class Ball extends Object {
 	/**
 	 * Utilizado para pintar un monstruo, según sus coordenadas de x e y
 	 */
-	@Override
-	public void paint(Graphics g) {
-		g.setColor(Color.ORANGE);
-		g.fillOval(this.x, this.y, 7, 7);
-	}
 
 	@Override
 	public void actua() {
+		if(start == true) {
 		// El monstruo se mueve de manera horizontal, en cada FPS
 		this.x += this.velocidadX;
 		// Si el monstruo abandona la escena por la izquierda o la derecha, rebota
@@ -123,8 +119,85 @@ public class Ball extends Object {
 		if (this.y < 0 || this.y > Arkanoid.getInstance().getCanvas().getHeight()) {
 			this.velocidadY = -this.velocidadY;
 		}
+		if (this.y > Arkanoid.getInstance().getCanvas().getHeight()) {
+			this.velocidadY = 0;
+			this.velocidadX = 0;
+			JOptionPane.showInternalMessageDialog(null, "GAME OVER", null, velocidadX);
+			System.exit(0);
+		}
+		}else {
+		if (left) this.x -= SPEED;
+		if (right) this.x += SPEED;
+		
+		// Compruebo si el player sale del canvas por cualquiera de los cuatro márgenes
+		move(this.x);
+		}
+	}
+
+	public void collidesWith(Object a) {
+		super.collidesWith(a);
+		// Si colisionamos con un player o un disparo, eliminamos al monstruo
+		if (a instanceof BlueBlock || a instanceof GreenBlock || a instanceof MagentaBlock || 
+				a instanceof RedBlock || a instanceof YellowBlock || a instanceof Ship) {
+			this.velocidadY = -this.velocidadY;
+		}
+	}
+	/**
+	 * Mediante la llamada a este método, podemos cambiar la posición del jugador a
+	 * unas nuevas coordenadas
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void move(int x) {
+		this.x = x;
+		// Controlo los casos en los que el jugador pueda salir del Canvas
+		MiCanvas canvas = Arkanoid.getInstance().getCanvas(); // Referencia al objeto Canvas usado
+		
+		// Compruebo si el jugador sale por la derecha
+		if (this.x > (canvas.getWidth() - this.ancho)) {
+			this.x = canvas.getWidth() - this.ancho;
+		}
+
+		// Compruebo si el jugador sale por la izquierda
+		if (this.x < 0) {
+			this.x = 0;
+		}
 		
 	}
+
+	/**
+	 * Se ejecuta al recibir un evento del teclado: tecla presionada
+	 * @param e
+	 */
+	public void keyPressed (KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			left = true; break;
+		case KeyEvent.VK_RIGHT:
+			right = true; break;
+		case KeyEvent.VK_SPACE:
+			start = true; break;
+		}
+	}
+	
+	/**
+	 * Se ejecuta al recibir un evento del teclado: tecla liberada
+	 * @param e
+	 */
+	public void keyReleased (KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			left = false; break;
+		case KeyEvent.VK_RIGHT:
+			right = false; break;
+		}
+	}
+	
+	
+	
+	
+	
 
 	@Override
 	protected Object getCanvas() {
