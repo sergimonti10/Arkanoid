@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MiCanvas extends Canvas {
 	
-	List<Object> objects = null;
+	List<PrincipalObject> objects = null;
 	
 	private BufferStrategy strategy = null;
 
@@ -19,7 +19,7 @@ public class MiCanvas extends Canvas {
 	 * Constructor
 	 * @param actores
 	 */
-	public MiCanvas (List<Object> objects) {
+	public MiCanvas (List<PrincipalObject> objects) {
 		this.objects = objects;
 	}
 	/**
@@ -41,7 +41,7 @@ public class MiCanvas extends Canvas {
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		// Pinto cada uno de los actores
-		for (Object a : this.objects) {
+		for (PrincipalObject a : this.objects) {
 			a.paint(g);
 		}
 		strategy.show();

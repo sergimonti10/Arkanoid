@@ -15,16 +15,18 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+
 public class Arkanoid {
 
 	private static int FPS = 60;
 	private JFrame window = null;
-	private List<Object> objects = new ArrayList<Object>();
+	private List<PrincipalObject> objects = new ArrayList<PrincipalObject>();
 	private MiCanvas canvas = null;
 	private static Ship ship = null;
 	private static Ball ball = null;
 	public static Arkanoid instance = null;
-	private List<Object> objectsDelete = new ArrayList<Object>();
+	private List<PrincipalObject> objectsDelete = new ArrayList<PrincipalObject>();
+	private List<PrincipalObject> objectsToIncorporate = new ArrayList<PrincipalObject>();
 	
 	public static Arkanoid getInstance() {
 		if (instance == null) { // Si no está inicializada, se inicializa
@@ -96,6 +98,7 @@ public class Arkanoid {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		ResourcesCache.getInstance().cargarRecursosEnMemoria();
 		Arkanoid.getInstance().game();
 	}
 
@@ -113,7 +116,7 @@ public class Arkanoid {
 			canvas.drawScene();
 			
 			// Recorro todos los actores, consiguiendo que cada uno de ellos actúe
-			for (Object a : objects) {
+			for (PrincipalObject a : objects) {
 				a.actua();
 			}
 			
@@ -137,8 +140,8 @@ public class Arkanoid {
 	 * 
 	 * @return
 	 */
-	private static List<Object> createObjects () {
-		List<Object> objects = new ArrayList<Object>();
+	private static List<PrincipalObject> createObjects () {
+		List<PrincipalObject> objects = new ArrayList<PrincipalObject>();
 		
 		
 		//Construyo un player para este juego y lo agrego a la lista
@@ -196,6 +199,10 @@ public class Arkanoid {
 		// Devuelvo la lista con todos los actores del juego
 		return objects;
 	}
+	
+	public void incorporateNewObject (PrincipalObject a) {
+		this.objectsToIncorporate.add(a);
+	}
 
 
 	public MiCanvas getCanvas() {
@@ -213,20 +220,23 @@ public class Arkanoid {
 		}
 	}
 	
-	public void objectDelete (Object a) {
+	public void objectDelete (PrincipalObject a) {
 		this.objectsDelete.add(a);
 	}
 
-	public void ballCollisions(Object a) {
+	public void ballCollisions(PrincipalObject a) {
 		
 	}
 	/**
 	 * Incorpora los actores nuevos al juego y elimina los que corresponden
 	 */
 	private void updateActors () {
-
+		for (PrincipalObject a : this.objectsToIncorporate) {
+			this.objects.add(a);
+		}
+		this.objectsToIncorporate.clear();
 		// Elimino los actores que se deben eliminar
-		for (Object a : this.objectsDelete) {
+		for (PrincipalObject a : this.objectsDelete) {
 			this.objects.remove(a);
 		}
 		this.objectsDelete.clear(); // Limpio la lista de actores a eliminar, ya los he eliminado
@@ -239,11 +249,11 @@ public class Arkanoid {
 		// sólo con la excepción de no comparar un actor consigo mismo.
 		// La detección de colisiones se va a baser en formar un rectángulo con las medidas que ocupa cada actor en pantalla,
 		// De esa manera, las colisiones se traducirán en intersecciones entre rectángulos.
-		Object actor1 = ball;
+		PrincipalObject actor1 = ball;
 			// Creo un rectángulo para este actor.
 			Rectangle rect1 = new Rectangle(actor1.getX(), actor1.getY(), actor1.getAncho(), actor1.getAlto());
 			// Compruebo un actor con cualquier otro actor
-			for (Object actor2 : this.objects) {
+			for (PrincipalObject actor2 : this.objects) {
 				// Evito comparar un actor consigo mismo, ya que eso siempre provocaría una colisión y no tiene sentido
 				if (!actor1.equals(actor2)) {
 					// Formo el rectángulo del actor 2

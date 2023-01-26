@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 
 
-public class Ball extends Object {
+public class Ball extends PrincipalObject {
 	// Propiedades privadas de cada monstruo
 	private String nombre; // Nombre que recibe el monstruo
 	private int velocidadX = -5;
@@ -36,8 +36,9 @@ public class Ball extends Object {
 	 * @param probabilidadDisparo
 	 */
 	public Ball(int x, int y, String nombre, int ancho, int alto) {
-		super(x, y, ancho, alto, ImagesCache.getInstance().getImagen(ImagesCache.BALL_IMAGE));
+		super(x, y, ancho, alto);
 		this.nombre = nombre;
+		this.setSpriteActual(ResourcesCache.getInstance().getImagen(ResourcesCache.BALL_IMAGE));
 	}
 	
 	// Acciones de cada monstruo
@@ -77,10 +78,6 @@ public class Ball extends Object {
 	/**
 	 * Metodo que devuelve un String con todos los valores de este objeto.
 	 */
-	public String toString() {
-		return "Monster [nombre=" + nombre + ", getX()=" + getX()
-				+ ", getY()=" + getY() + ", getImg()=" + getImg() + "]";
-	}
 
 	
 	// Getters y Setters 
@@ -134,12 +131,13 @@ public class Ball extends Object {
 		}
 	}
 
-	public void collidesWith(Object a) {
+	public void collidesWith(PrincipalObject a) {
 		super.collidesWith(a);
 		// Si colisionamos con un player o un disparo, eliminamos al monstruo
 		if (a instanceof BlueBlock || a instanceof GreenBlock || a instanceof MagentaBlock || 
 				a instanceof RedBlock || a instanceof YellowBlock || a instanceof Ship) {
 			this.velocidadY = -this.velocidadY;
+			ResourcesCache.getInstance().playSonido("explosion.wav");
 		}
 	}
 	/**
@@ -192,29 +190,6 @@ public class Ball extends Object {
 		case KeyEvent.VK_RIGHT:
 			right = false; break;
 		}
-	}
-	
-	
-	
-	
-	
-
-	@Override
-	protected Object getCanvas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

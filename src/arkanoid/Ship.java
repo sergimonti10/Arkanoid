@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
 
-public class Ship extends Object {
+public class Ship extends PrincipalObject {
 	// Propiedades estáticas de esta clase
 	// Propiedades que indican si se está produciendo un movimiento en una dirección
 	private boolean left = false, right = false;
@@ -28,15 +28,13 @@ public class Ship extends Object {
 	 * @param img
 	 */
 	public Ship(int x, int y, int ancho, int alto) {
-		super(x, y, ancho, alto, ImagesCache.getInstance().getImagen(ImagesCache.SHIP_IMAGE));
+		super(x, y, ancho, alto);
+		this.setSpriteActual(ResourcesCache.getInstance().getImagen(ResourcesCache.SHIP_IMAGE));
 	}
 
 	/**
 	 * Obtención de un String con todos los datos de un objeto Player
 	 */
-	public String toString() {
-		return "Ship [getX()=" + getX() + ", getY()=" + getY() + ", getImg()=" + getImg() + "]";
-	}
 
 	/**
 	 * Utilizado para pintar un player, según sus coordenadas de x e y
@@ -101,22 +99,5 @@ public class Ship extends Object {
 			right = false; break;
 		}
 	}
-
-	@Override
-	protected Object getCanvas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 }

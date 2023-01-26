@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class RedBlock extends Object {
+public class RedBlock extends PrincipalObject {
 	// Propiedades privadas de cada monstruo
 	private String nombre; // Nombre que recibe el monstruo
 	
@@ -26,8 +26,9 @@ public class RedBlock extends Object {
 	 * @param probabilidadDisparo
 	 */
 	public RedBlock(int x, int y, String nombre, int ancho, int alto) {
-		super(x, y, ancho, alto, ImagesCache.getInstance().getImagen(ImagesCache.RED_BLOCK_IMAGE));
+		super(x, y, ancho, alto);
 		this.nombre = nombre;
+		this.setSpriteActual(ResourcesCache.getInstance().getImagen(ResourcesCache.RED_BLOCK_IMAGE));
 	}
 	
 	// Acciones de cada monstruo
@@ -35,10 +36,6 @@ public class RedBlock extends Object {
 	/**
 	 * Metodo que devuelve un String con todos los valores de este objeto.
 	 */
-	public String toString() {
-		return "Monster [nombre=" + nombre + ", getX()=" + getX()
-				+ ", getY()=" + getY() + ", getImg()=" + getImg() + "]";
-	}
 
 	
 	// Getters y Setters 
@@ -63,34 +60,18 @@ public class RedBlock extends Object {
 
 	@Override
 	public void actua() {
-		// TODO Auto-generated method stub
+		super.actua();
 		
 	}
 	
-	public void collidesWith(Object a) {
+	public void collidesWith(PrincipalObject a) {
 		super.collidesWith(a);
 		// Si colisionamos con un player o un disparo, eliminamos al monstruo
 		if (a instanceof Ball) {
 			Arkanoid.getInstance().objectDelete(this);
+			ResourcesCache.getInstance().playSonido("explosion.wav");
+			Arkanoid.getInstance().incorporateNewObject(new Explosion(this.x, this.y));
 		}
-	}
-
-	@Override
-	protected Object getCanvas() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	protected int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }
